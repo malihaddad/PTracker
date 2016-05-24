@@ -1,0 +1,129 @@
+
+
+body {
+    background-color:white;
+}
+
+/* HREF links */
+
+a {
+    color: blue;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: blue;
+}
+
+/* ....................................................................... */
+/* The top-right side panel and its title child */
+
+div#sidepanel {
+    position: absolute;
+    pointer-events: none;
+    top: 60px;
+    right: 10px;
+}
+
+/* ....................................................................... */
+/* On/off toggles for the help/info panels */
+
+div.panel_off {
+    visibility: hidden;
+    pointer-events: none;
+}
+
+div.panel_on {
+    visibility: visible;
+    pointer-events: all;
+}
+
+
+
+/* stock details panel */
+
+
+div#stockInfo {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    padding: 4px;
+    text-align: left;
+}
+
+
+
+/* ....................................................................... */
+/* SVG elements */
+
+div#stockNetwork svg {
+    background-color: ghostwhite;
+    cursor: move;
+}
+
+line.link {
+    stroke: #FFFFFF;
+}
+
+circle {
+    cursor: crosshair;
+}
+
+circle.sibling {
+    /*fill: blue;*/
+    fill: #FF00FF;
+}
+
+circle.main {
+    /*fill: red;*/
+    fill: #FF0066;
+    fill-opacity: 1.0;
+}
+
+/* ....................................................................... */
+/* Graph labels */
+
+g.gLabel {
+    font: 10px sans-serif;
+    font-weight: normal;
+    visibility: hidden;
+}
+
+g.on {
+    visibility: visible;
+}
+
+g.zoomed {
+    font-family: Verdana, Arial, Helvetica, sans-serif;
+    font-size: 10px;
+    font-weight: normal;
+    text-align: center;
+    color: #000;
+    border: none;
+    z-index: 0;
+}
+
+text {
+    font: 10px sans-serif;
+    font-weight: normal;
+    stroke-opacity: 1.0;
+}
+
+text.nlabel {
+    /*stroke: #000000;*/
+}
+
+text.nshadow {
+    stroke: #fff;
+    stroke-width: 3px;
+    /*stroke-opacity: 0.5;*/
+    /*visibility: hidden;*/
+}
+
+text.main {
+    font: 12px sans-serif;
+    font-weight: bold;
+}

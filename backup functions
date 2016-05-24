@@ -1,0 +1,123 @@
+#load Data
+x = loadmat('DATA/dataPAT.mat')
+
+datapr = x['datarawpr']
+datatot = x['datatot']
+dates = x['dates']
+udates = x['udates']
+ave_vlist2 = x['ave_vlist2']
+ave_vlist3 = x['ave_vlist3']
+vlist2 = x['vlist2']
+nameID = x['nameID']
+tickers = x['tickers']
+sdata =  x['sdata']  # sector data
+
+
+dd = (dates-719529.0)*86400000.0
+udates=np.array([datetime.datetime.utcfromtimestamp(a/1000.0) for a in dd])
+
+#snp = np.nanmean(datatot,axis=1)
+
+snp = np.zeros(len(vlist2))
+for i in range(0,len(vlist2)):
+    fi = vlist2[i].list
+    snp[i] = np.nanmean(datatot[i,fi])
+
+indexSnP = 100.0 * np.cumprod(1+snp/100)
+
+indexSnP = indexSnP.reshape([len(snp),1])
+dd = dd.reshape([len(dd),1])
+inputSnP = np.hstack((dd,indexSnP))
+interval = [dd[0][0], dd[-1][0]]
+
+
+
+# UTILITY FUNCTIONS
+
+def interval2days(interval):
+    period,_ = np.where((dd>=interval[0]) & (dd<=interval[1]))
+    return period
+
+def arr2json(arr):
+    return json.dumps(arr.tolist())
+
+def json2arr(astr,dtype):
+    return np.fromiter(json.loads(astr),dtype)
+
+def selectStocks(data):
+    v = np.sum(np.isnan(data),axis=0)
+    id = np.where(v==0)
+    return id[0]
+
+def diffusion_mat(vecs, vals= None, dtime = 0.0):
+    if (dtime!=0):
+        vecs = vecs * (vals**dtime)
+    dmat = squareform(pdist(vecs,'euclidean'))
+
+    return dmat
+
+
+def get_sectorWeights(wP):
+
+    idl = np.where(wP!=0)
+    idl = idl[0]
+    wP = wP[idl]
+    sector = sdata[idl]
+
+
+    dataret = datatot[:,idl]
+    dataret = dataret[period,:]
+    dataret = dataret*wP
+
+
+    wsec = {}
+
+    retsec = {}
+
+    for sec in secL2.keys():
+
+        fi = np.where(sector==secL2[sec])
+        fi = fi[0]
+        if len(fi):
+
+            wsec[sec] = np.sum(wP[fi])
+            ret = np.nansum(dataret[:,fi],axis=1)
+            ret = (np.prod(1.0+ret/100.0)-1.0)*100
+            retsec[sec]= ret
+
+    return wsec, retsec
+
+
+
+def get_piecharts(future=0):
+
+    # future= 1 means we take the first day of the interval and see what happens to the stocks in the next period
+    # otherwise pick last day of the interval for defining the weights and see what was the perf of these stocks in the past
+
+    wL = ave_vlist2[period[future-1]].weights
+    #wS = ave_vlist3[period[future-1]].weights
+
+    #wBench = np.zeros(len(wL))
+    #wBench[vlist2[period[future-1]].list] = 1.0
+    #wBench = wBench/np.sum(wBench)
+
+
+    # Long, short and SnP sectorWeights
+    wsecL,retsecL = get_sectorWeights(wL)
+    #wsecS, retsecS = get_sectorWeights(wS)
+    #wsecBench, retsecBench = get_sectorWeights(wBench)
+
+    # ADD SHADOW PORTFOLIOS: NEED the Idx matrix: so this should be the only input with futur=0 or1
+
+    return wsecL
+
+
+
+# define pos = position of a stock, Long +weights, Short -weights or Not=0
+
+        pos = 0.0
+        if i in indexL:
+            pos = 1.0
+
+        if i in indexS:
+            pos = -1.0

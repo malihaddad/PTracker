@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Portfolio Tracker</title>
+
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='market-network.css') }}" />
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='nv.d3.css') }}" />
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+
+    <script src="https://code.highcharts.com/stock/highstock.js"></script>
+    <script src="https://code.highcharts.com/stock/modules/exporting.js"></script>
+
+    <script src="{{ url_for('static', filename = 'bootstrap.min.js')}}"> </script>
+    <script type='text/javascript' src="http://d3js.org/d3.v3.min.js"> </script>
+
+    <script type='text/javascript' src="{{ url_for('static', filename='market-network.js') }}" > </script>
+    <script type="text/javascript" src="{{ url_for('static', filename='myscript.js') }}"></script>
+
+
+    <script type="text/javascript" src="{{ url_for('static', filename='nv.d3.js') }}"></script>
+
+    <style>
+        table, th, td {border: 0px solid black;}
+    </style>
+
+    <style>
+
+        #myscatterplot .axis path, .axis line {
+            fill: none;
+            stroke: rgba(0, 0, 0, 0.1);
+            shape-rendering: crispEdges;
+        }
+
+        #myscatterplot .axisLine {
+            fill: none;
+            shape-rendering: crispEdges;
+            stroke: rgba(0, 0, 0, 0.5);
+            stroke-width: 2px;
+        }
+
+        #myscatterplot .node {
+            stroke: #000;
+            opacity: .5;
+        }
+
+        #myscatterplot circle.main {
+            fill: #FF0066;
+            opacity: 1.0;
+            fill-opacity: 1.0;
+        }
+
+        #myscatterplot circle.sibling {
+            opacity: 1.0;
+            fill: #FF00FF;
+            fill-opacity: 1.0;
+        }
+
+         .tooltip {
+            position: absolute;
+            width: 200px;
+            height: 28px;
+            pointer-events: none;
+            fill: red;
+            stroke: green;
+            font: 18px sans-serif;
+        }
+
+        #myscatterplot svg {
+            font: 11px sans-serif;
+        }
+
+        #myscatterplot  rect {
+            fill: transparent;
+            shape-rendering: crispEdges;
+        }
+
+        #chartnv3 svg {
+            height: 800px;
+            width: 1200px;
+        }
+
+        #chartnv3horizontal svg {
+            height: 800px;
+            width: 1200px;
+        }
+
+
+         aside {
+            font-size: small;
+            right:0;
+            position: absolute;
+            width: 275px;
+        }
+
+
+
+    </style>
+
+
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#">PortfolioTracker</a>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar">
+      <ul class="nav navbar-nav">
+          <li class="active"><a data-toggle="tab" href="#portfoliodiv"> Portfolio Chart</a></li>
+          <li><a data-toggle ="tab" href="#perf">Performance</a></li>
+          <li><a data-toggle="tab" href="#p1">Sector Attribution</a> </li>
+          <li><a data-toggle ="tab" href="#p2">Portfolio Tracker</a></li>
+          <li><a data-toggle ="tab" href="#p3">Graph Explorer</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li><a data-toggle ="tab" href="#psignup"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+        <li><a data-toggle ="tab" href="#plogin"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="tab-content">
+
+    <div id="portfoliodiv" class="tab-pane fade in active">
+
+        <div class="container">
+            <!--- Display the Portfolio Value Chart -->
+            <div id="portfolio_value" style="height: 400px; min-width: 310px"></div>
+
+        </div>
+
+    </div>
+
+    <div id="perf"  class="tab-pane fade">
+
+        <div class="container">
+            <ul class="nav nav-tabs">
+                <li><a data-toggle="tab" href="#perf1" class="active">LONG Performance</a></li>
+                <li><a data-toggle="tab" href="#perf2">SHORT Performance</a></li>
+            </ul>
+
+            <div class="tab-content">
+
+                <div id="perf2" class="tab-pane fade">
+
+                        <div id="chartnv3">
+                            <svg></svg>
+                        </div>
+
+                </div>
+                <div id="perf1" class="tab-pane fade in active">
+
+                        <div id="chartnv3horizontal">
+                            <svg></svg>
+                        </div>
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <div id="p1" class="tab-pane fade">
+
+            <div id="piechartLong" style=" height: 400px; width: 1200px;"></div>
+        <hr>
+        <div id="piechartShort" style=" height: 400px;width: 1200px;"></div>
+
+    </div>
+
+    <div id="p2" class="tab-pane fade">
+        <h3> Tracker</h3>
+        <p>Insert Logic for tracker.</p>
+    </div>
+
+    <div id="p3" class="tab-pane fade" >
+
+        <div class="container">
+
+            <input type="button" name="Ticker" id="searchtic" value="Ticker">
+            <input type="text" id="tic2find" size=8 value="">
+
+
+            <ul class="nav nav-tabs">
+                <li><a data-toggle="tab" href="#scatter" class="active">Scatter Plot</a></li>
+                <li><a data-toggle="tab" href="#network">Network</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <aside >
+
+                    <p>Color:
+                        <select id="colormode">
+                            <option value="Return">by Return</option>
+                            <option value="Sector">by Sector</option>
+                            <option value="Portfolio">LONG-Short</option>
+                        </select>
+
+                        <div id="stockInfo" class="panel_off"></div>
+
+
+
+                </aside>
+
+                <div id="scatter" class="tab-pane fade in active">
+
+                    <div id="myscatterplot"></div>
+                </div>
+
+                <div id="network" class="tab-pane fade">
+                    <div id="stockNetwork"></div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div id="psignup" class="tab-pane fade">
+    </div>
+
+</div>
+
+
+
+<!-- MAIN JS CODE -->
+<script>
+    // Display the Portfolio Value Chart
+    $(function() {
+        var start;
+        var end;
+        var numdata = {{ num }};
+
+        $('#portfolio_value').highcharts('StockChart', {
+                chart: {
+                    zoomType: 'x',
+                    events: {
+
+                        selection: function (event) {},
+                        redraw: function(){
+                            var chart = $('#portfolio_value').highcharts();
+                            myRedraw(chart);
+                        },
+                    }
+                },
+                scrollbar: {liveRedraw: false},
+                title : {text : 'Portfolio  Tracker'},
+                series : [{
+                    name : 'Portfolio Value',
+                    data :  numdata,
+                    tooltip : { valueDecimals : 2 },
+                }]
+        })
+    });
+
+</script>
+
+
+</body>
+</html>
